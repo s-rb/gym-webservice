@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Roman Surkov
@@ -22,9 +21,19 @@ import javax.persistence.Table;
 public class Exercise {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "exercise_id")
     private Long id;
 
     @Column(name = "exercise_name")
     private String name;
+
+    @Column(name = "exercise_description")
+    private String description;
+
+    @ManyToMany
+    @JoinTable(name = "exercises_tags",
+            joinColumns = {@JoinColumn(name = "exercise_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private Set<Tag> tags = new HashSet<>();
 }

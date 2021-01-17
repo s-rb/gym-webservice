@@ -1,0 +1,1 @@
+INSERT INTO exercises_tags (exercise_id, tag_id) VALUES (1, 1), (1, 2), (2, 3);
