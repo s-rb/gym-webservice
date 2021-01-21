@@ -3,6 +3,7 @@ package ru.list.surkovr.gymservice.converters;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import ru.list.surkovr.gymservice.domain.Exercise;
+import ru.list.surkovr.gymservice.domain.Tag;
 import ru.list.surkovr.gymservice.dto.ExerciseDto;
 
 import java.util.Collections;
@@ -23,6 +24,10 @@ public class DtoConverter {
         if (nonNull(exerciseById)) {
             dto.setId(exerciseById.getId());
             dto.setName(exerciseById.getName());
+            dto.setTags(
+                    nonNull(exerciseById.getTags())
+                    ? exerciseById.getTags().stream().map(Tag::getName).collect(Collectors.toSet())
+                    : Collections.emptySet());
         }
         return dto;
     }

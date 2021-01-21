@@ -1,29 +1,18 @@
 package ru.list.surkovr.gymservice.services;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import ru.list.surkovr.gymservice.domain.Exercise;
-import ru.list.surkovr.gymservice.repositories.ExerciseRepository;
 
 import java.util.List;
 
 /**
  * @author Roman Surkov
- * @created on 17.01.2021
+ * @created on 21.01.2021
  */
-@Slf4j
-@Service
-public class ExerciseService {
+public interface ExerciseService {
 
-    @Autowired
-    private final ExerciseRepository exerciseRepository;
+    List<Exercise> findAll();
 
-    public ExerciseService(ExerciseRepository exerciseRepository) {
-        this.exerciseRepository = exerciseRepository;
-    }
+    List<Exercise> findAllByTag(String tagname);
 
-    public List<Exercise> findAll() {
-        return exerciseRepository.findAll();
-    }
+    List<Exercise> findAllByTagNotAccurate(String tagname, int accuracy);
 }

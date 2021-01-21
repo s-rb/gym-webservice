@@ -3,16 +3,15 @@ package ru.list.surkovr.gymservice.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.list.surkovr.gymservice.converters.DtoConverter;
 import ru.list.surkovr.gymservice.domain.Exercise;
 import ru.list.surkovr.gymservice.dto.ExerciseDto;
 import ru.list.surkovr.gymservice.services.ExerciseService;
 
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 /**
  * @author Roman Surkov
@@ -42,5 +41,18 @@ public class ExerciseController {
     @GetMapping("{id}")
     public ResponseEntity<ExerciseDto> getById(@PathVariable("id") Exercise exerciseById) {
         return ResponseEntity.ok(dtoConverter.convert(exerciseById));
+    }
+
+    @GetMapping("search")
+    public ResponseEntity<List<ExerciseDto>> searchByTag(@RequestParam String tag,
+                                                         @RequestParam(required = false) Boolean isNotAccurateSearch,
+                                                         @RequestParam(required = false, defaultValue = "30") Integer accuracy) {
+        List<Exercise> exercises;
+        if (isNull(isNotAccurateSearch) || !isNotAccurateSearch) {
+            exercises = exerciseService.findAllByTag(tag);
+        } else {
+            exercises = exerciseService.findAllByTagNotAccurate(tag, accuracy);
+        }
+        return ResponseEntity.ok(dtoConverter.convert(exercises));
     }
 }
