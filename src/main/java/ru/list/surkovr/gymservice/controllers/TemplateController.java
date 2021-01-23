@@ -39,6 +39,7 @@ public class TemplateController {
         this.dtoConverter = dtoConverter;
     }
 
+    // TODO сделать проверку на тип файлов (расширение)
     @PostMapping
     @ResponseBody
     public ResponseEntity<UploadFileDto> uploadFile(@RequestParam("file") MultipartFile file,
