@@ -42,7 +42,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public List<Exercise> findAllByTagNotAccurate(String tagname, int accuracy) {
         if (StringUtils.hasText(tagname)) {
-            return exerciseRepository.finaAllByTagNameNotAccurate(tagname, accuracy);
+            return exerciseRepository.finaAllByTagNameNotAccurate(tagname.toLowerCase(), accuracy);
         } else {
             return Collections.emptyList();
         }

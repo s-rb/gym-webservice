@@ -47,6 +47,7 @@ private void writeData(OutputStream outputStream, Object exercise, Class<?> claz
 
     private void writeHeader(OutputStream outputStream, Class<?> clazz) throws IOException {
         String headerLine = Arrays.stream(clazz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(DescriptionAnnotation.class))
                 .map(field -> field.getAnnotation(DescriptionAnnotation.class).value())
                 .collect(Collectors.joining(EXPORT_CSV_DELIMITER));
         String headerLineNextStr = headerLine + "\n";

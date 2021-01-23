@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class Exercise {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exercise_id")
     @DescriptionAnnotation("Идентификтор")
     private Long id;
@@ -47,8 +47,8 @@ public class Exercise {
     public static final String TAG_DELIMITER = "|";
 
     public String getExportString(String delimiter) {
-        String tagStr = CollectionUtils.isEmpty(tags)
-                ? "" : tags.stream().map(t -> t.getName()).collect(Collectors.joining(TAG_DELIMITER));
+        String tagStr = CollectionUtils.isEmpty(tags) ? ""
+                : tags.stream().map(Tag::getName).collect(Collectors.joining(TAG_DELIMITER));
         return id
                 + delimiter + name
                 + delimiter + description

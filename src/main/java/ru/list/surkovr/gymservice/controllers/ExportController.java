@@ -3,6 +3,7 @@ package ru.list.surkovr.gymservice.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.list.surkovr.gymservice.domain.Exercise;
 import ru.list.surkovr.gymservice.services.ExerciseService;
@@ -32,14 +33,25 @@ public class ExportController {
     }
 
     @GetMapping("exercises")
-    public void exportExercises(HttpServletResponse response) throws IOException {
+    public void exportExercises(HttpServletResponse response,
+                                @RequestParam(required = false) Boolean isOdtFormat) throws IOException {
+        List<Exercise> exercises = exerciseService.findAll();
+
         final DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         String dateTime = LocalDateTime.now().format(formatter);
-        String fileName = format("exercises_export_%s.csv", dateTime);
-        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-        response.setContentType("text/csv");
+        String fileName;
 
-        List<Exercise> exercises = exerciseService.findAll();
+        if (Boolean.TRUE.equals(isOdtFormat)) {
+            response.setContentType("application/octet-stream");
+            fileName = format("request_clarifications_%s.zip", dateTime);
+
+        } else {
+            response.setContentType("text/csv");
+            fileName = format("exercises_export_%s.csv", dateTime);
+        }
+
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
 
         ServletOutputStream outputStream = response.getOutputStream();
         exportService.writeExercisesToOutputStream(exercises, outputStream);
