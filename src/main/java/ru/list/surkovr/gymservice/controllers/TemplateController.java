@@ -16,9 +16,13 @@ import ru.list.surkovr.gymservice.domain.DocTemplate;
 import ru.list.surkovr.gymservice.domain.DocTemplateCodeEnum;
 import ru.list.surkovr.gymservice.domain.DocTemplateMimeType;
 import ru.list.surkovr.gymservice.dtos.UploadFileDto;
-import ru.list.surkovr.gymservice.services.FileStorageService;
+import ru.list.surkovr.gymservice.services.interfaces.FileStorageService;
+import ru.list.surkovr.gymservice.utils.Validator;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Roman Surkov
@@ -47,6 +51,16 @@ public class TemplateController {
                                                     @RequestParam(required = false) DocTemplateCodeEnum code,
                                                     @RequestParam(required = false) DocTemplateMimeType mimeType) {
         try {
+            String originalFilename = file.getOriginalFilename();
+            List<String> allowedExtensions = Arrays.stream(DocTemplateMimeType.values()).map(Enum::name).collect(Collectors.toList());
+            boolean isFileExtensionValid = Validator.isFileExtensionValid(originalFilename,
+                    allowedExtensions);
+            if (!isFileExtensionValid) {
+                String msg = "File extension is not valid. Supported extensions: " + String.join(", ", allowedExtensions);
+                log.error("### In uploadFile caught exception. " + msg);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.WARNING, msg).build();
+            }
+
             DocTemplate saved = fileStorageService
                     .uploadFile(file.getInputStream(), name, file.getSize(), code, mimeType);
             return ResponseEntity.ok().body(dtoConverter.convert(saved));
