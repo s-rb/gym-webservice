@@ -17,5 +17,6 @@ public class ExerciseDto {
 
     private Long id;
     private String name;
+    private String description;
     private Set<String> tags;
 }

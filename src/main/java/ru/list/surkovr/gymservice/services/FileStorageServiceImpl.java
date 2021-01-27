@@ -7,6 +7,7 @@ import ru.list.surkovr.gymservice.domain.DocTemplate;
 import ru.list.surkovr.gymservice.domain.DocTemplateCodeEnum;
 import ru.list.surkovr.gymservice.domain.DocTemplateMimeType;
 import ru.list.surkovr.gymservice.repositories.DocTemplateRepository;
+import ru.list.surkovr.gymservice.services.interfaces.FileStorageService;
 
 import java.io.IOException;
 import java.io.InputStream;

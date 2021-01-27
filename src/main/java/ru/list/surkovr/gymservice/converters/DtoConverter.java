@@ -21,14 +21,15 @@ import static java.util.Objects.nonNull;
 @Component
 public class DtoConverter {
 
-    public ExerciseDto convert(Exercise exerciseById) {
+    public ExerciseDto convert(Exercise exercise) {
         ExerciseDto dto = new ExerciseDto();
-        if (nonNull(exerciseById)) {
-            dto.setId(exerciseById.getId());
-            dto.setName(exerciseById.getName());
+        if (nonNull(exercise)) {
+            dto.setId(exercise.getId());
+            dto.setName(exercise.getName());
+            dto.setDescription(exercise.getDescription());
             dto.setTags(
-                    nonNull(exerciseById.getTags())
-                            ? exerciseById.getTags().stream().map(Tag::getName).collect(Collectors.toSet())
+                    nonNull(exercise.getTags())
+                            ? exercise.getTags().stream().map(Tag::getName).collect(Collectors.toSet())
                             : Collections.emptySet());
         }
         return dto;

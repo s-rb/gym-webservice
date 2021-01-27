@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.list.surkovr.gymservice.domain.Exercise;
-import ru.list.surkovr.gymservice.services.ExerciseService;
-import ru.list.surkovr.gymservice.services.ExportService;
+import ru.list.surkovr.gymservice.services.interfaces.ExerciseService;
+import ru.list.surkovr.gymservice.services.interfaces.ExportService;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;

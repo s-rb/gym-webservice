@@ -1,4 +1,4 @@
-package ru.list.surkovr.gymservice.services;
+package ru.list.surkovr.gymservice.services.interfaces;
 
 import ru.list.surkovr.gymservice.domain.DocTemplate;
 import ru.list.surkovr.gymservice.domain.DocTemplateCodeEnum;

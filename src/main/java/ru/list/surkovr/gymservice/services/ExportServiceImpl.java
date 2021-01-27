@@ -3,6 +3,7 @@ package ru.list.surkovr.gymservice.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.list.surkovr.gymservice.domain.Exercise;
+import ru.list.surkovr.gymservice.services.interfaces.ExportService;
 import ru.list.surkovr.gymservice.utils.DescriptionAnnotation;
 
 import java.io.BufferedOutputStream;
