@@ -41,19 +41,18 @@ public class ExportController {
         String dateTime = LocalDateTime.now().format(formatter);
         String fileName;
 
+        ServletOutputStream outputStream = response.getOutputStream();
+
         if (Boolean.TRUE.equals(isOdtFormat)) {
             response.setContentType("application/octet-stream");
             fileName = format("request_clarifications_%s.zip", dateTime);
-
+            exportService.writeExercisesToOutputStream(exercises, outputStream, true);
         } else {
             response.setContentType("text/csv");
             fileName = format("exercises_export_%s.csv", dateTime);
+            exportService.writeExercisesToOutputStream(exercises, outputStream);
         }
 
         response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-
-        ServletOutputStream outputStream = response.getOutputStream();
-        exportService.writeExercisesToOutputStream(exercises, outputStream);
     }
 }
