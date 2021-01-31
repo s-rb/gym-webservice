@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface ExportService {
 
-    void writeExercisesToOutputStream(List<Exercise> exercises, OutputStream outputStream);
+    void writeExercisesToOutputStream(List<Exercise> exercises, OutputStream outputStream, boolean hasToZip);
 
-    void writeExercisesToOutputStream(List<Exercise> exercises, ServletOutputStream outputStream, Boolean isOdtFormat);
+    void writeExercisesToOutputStream(List<Exercise> exercises, ServletOutputStream outputStream,
+                                      boolean isOdtFormat, boolean hasToZip);
 
 }

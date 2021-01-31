@@ -34,7 +34,9 @@ public class ExportController {
 
     @GetMapping("exercises")
     public void exportExercises(HttpServletResponse response,
-                                @RequestParam(required = false) Boolean isOdtFormat) throws IOException {
+                                @RequestParam(required = false, defaultValue = "false") Boolean isOdtFormat,
+                                @RequestParam(required = false, defaultValue = "false") Boolean hasToZip
+    ) throws IOException {
         List<Exercise> exercises = exerciseService.findAll();
 
         final DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
@@ -46,11 +48,11 @@ public class ExportController {
         if (Boolean.TRUE.equals(isOdtFormat)) {
             response.setContentType("application/octet-stream");
             fileName = format("request_clarifications_%s.zip", dateTime);
-            exportService.writeExercisesToOutputStream(exercises, outputStream, true);
+            exportService.writeExercisesToOutputStream(exercises, outputStream, true, hasToZip);
         } else {
             response.setContentType("text/csv");
             fileName = format("exercises_export_%s.csv", dateTime);
-            exportService.writeExercisesToOutputStream(exercises, outputStream);
+            exportService.writeExercisesToOutputStream(exercises, outputStream, hasToZip);
         }
 
         response.setHeader("Content-Disposition", "attachment; filename=" + fileName);

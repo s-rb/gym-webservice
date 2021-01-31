@@ -12,6 +12,7 @@ import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import ru.list.surkovr.gymservice.domain.*;
 import ru.list.surkovr.gymservice.repositories.DocTemplateRepository;
 import ru.list.surkovr.gymservice.services.interfaces.ExportService;
@@ -22,8 +23,12 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static java.util.Objects.isNull;
 
@@ -42,7 +47,7 @@ public class ExportServiceImpl implements ExportService {
     }
 
     @Override
-    public void writeExercisesToOutputStream(List<Exercise> exercises, OutputStream outputStream) {
+    public void writeExercisesToOutputStream(List<Exercise> exercises, OutputStream outputStream, boolean hasToZip) {
         try (BufferedOutputStream bos = new BufferedOutputStream(outputStream)) {
             writeHeader(bos, Exercise.class);
             for (Exercise exercise : exercises) {
@@ -61,9 +66,9 @@ public class ExportServiceImpl implements ExportService {
 
     @Override
     public void writeExercisesToOutputStream(List<Exercise> exercises, ServletOutputStream outputStream,
-                                             Boolean isOdtFormat) {
+                                             boolean isOdtFormat, boolean hasToZip) {
         if (Boolean.FALSE.equals(isOdtFormat)) {
-            writeExercisesToOutputStream(exercises, outputStream);
+            writeExercisesToOutputStream(exercises, outputStream, hasToZip);
         } else {
             DocTemplate template = docTemplateRepository.findByCode(DocTemplateCodeEnum.ALL_EXERCISES_ODT);
             if (isNull(template)) {
@@ -73,14 +78,50 @@ public class ExportServiceImpl implements ExportService {
             byte[] templateData = template.getData();
 
             try (InputStream inputStream = new ByteArrayInputStream(templateData.clone())) {
-                processExportExerciseList(exercises, outputStream, template, inputStream);
+                if (Boolean.TRUE.equals(hasToZip)) {
+                    Map<String, ByteArrayOutputStream> mapToZip = new HashMap<>();
+                    processExportExerciseList(exercises, null, template, inputStream, mapToZip);
+                } else {
+                    processExportExerciseList(exercises, outputStream, template, inputStream, null);
+                }
             } catch (Exception e) {
                 log.error("### In writeExercisesToOutputStream caught exception", e);
             }
         }
     }
 
-    private void processExportExerciseList(List<Exercise> exercises, ServletOutputStream outputStream, DocTemplate template, InputStream inputStream) throws Exception {
+    private void writeZipArchive(Map<String, ByteArrayOutputStream> docs, OutputStream outputStream) {
+        if (CollectionUtils.isEmpty(docs) || isNull(outputStream)) {
+            log.error("### In writeZipArchive get null or empty docs or ouptupstream");
+            return;
+        }
+
+        final String exceptionMsg = "### In writeZipArchive caught exception";
+        try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outputStream))) {
+            docs.forEach((filename, byteArrayOutputStream) -> {
+                ZipEntry zipEntry = new ZipEntry(filename);
+                try {
+                    zos.putNextEntry(zipEntry);
+                    zos.write(byteArrayOutputStream.toByteArray());
+                    zos.closeEntry();
+                } catch (IOException e) {
+                    log.error(exceptionMsg, e);
+                } finally {
+                    try {
+                        byteArrayOutputStream.close();
+                    } catch (IOException e) {
+                        log.error(exceptionMsg, e);
+                    }
+                }
+            });
+        } catch (IOException e) {
+            log.error(exceptionMsg, e);
+        }
+    }
+
+    private void processExportExerciseList(List<Exercise> exercises, ServletOutputStream outputStream,
+                                           DocTemplate template, InputStream inputStream,
+                                           Map<String, ByteArrayOutputStream> mapToZip) throws Exception {
         Document doc = Document.loadDocument(inputStream);
 
         boolean hasSuccessfullyProcessedTable = false;
@@ -109,7 +150,15 @@ public class ExportServiceImpl implements ExportService {
         // Заменяем все паттерны в оставшемся документе (помимо уже обработанной таблицы)
         replaceAllPatternsInCellExerciseListDoc(doc, template.getName());
 
-        doc.save(outputStream);
+        if (CollectionUtils.isEmpty(mapToZip)) {
+            doc.save(outputStream);
+        } else {
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                doc.save(baos);
+                mapToZip.put(template.getName() + LocalDate.now().format(DateTimeFormatter.ISO_DATE)
+                        + "." + template.getMimeType().name().toLowerCase(), baos);
+            }
+        }
     }
 
     private void replaceAllPatternsInCellExerciseListDoc(Document doc, String documentName) {
@@ -119,7 +168,7 @@ public class ExportServiceImpl implements ExportService {
             replaceTextInOdfDocument(doc, ExercisesExportPatternsEnum.DATE.getPatternEscapedCharacters(),
                     LocalDate.now().format(DateTimeFormatter.ISO_DATE));
         } catch (InvalidNavigationException e) {
-            log.error("In replaceAllPatternsInCellVoterListDoc get exception for document: {}", doc.toString());
+            log.error("In replaceAllPatternsInCellExerciseListDoc get exception for document: {}", doc.toString());
         }
     }
 
