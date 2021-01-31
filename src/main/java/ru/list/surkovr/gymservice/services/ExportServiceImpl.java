@@ -13,6 +13,7 @@ import org.odftoolkit.simple.table.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import ru.list.surkovr.gymservice.domain.*;
 import ru.list.surkovr.gymservice.repositories.DocTemplateRepository;
 import ru.list.surkovr.gymservice.services.interfaces.ExportService;
@@ -46,6 +47,7 @@ public class ExportServiceImpl implements ExportService {
         this.docTemplateRepository = docTemplateRepository;
     }
 
+    // TODO - Zip this by hasToZip
     @Override
     public void writeExercisesToOutputStream(List<Exercise> exercises, OutputStream outputStream, boolean hasToZip) {
         try (BufferedOutputStream bos = new BufferedOutputStream(outputStream)) {
@@ -70,7 +72,7 @@ public class ExportServiceImpl implements ExportService {
         if (Boolean.FALSE.equals(isOdtFormat)) {
             writeExercisesToOutputStream(exercises, outputStream, hasToZip);
         } else {
-            DocTemplate template = docTemplateRepository.findByCode(DocTemplateCodeEnum.ALL_EXERCISES_ODT);
+            DocTemplate template = docTemplateRepository.findFirstByCode(DocTemplateCodeEnum.ALL_EXERCISES_ODT);
             if (isNull(template)) {
                 log.error("### In writeExercisesToOutputStream found null template");
                 return;
@@ -80,7 +82,8 @@ public class ExportServiceImpl implements ExportService {
             try (InputStream inputStream = new ByteArrayInputStream(templateData.clone())) {
                 if (Boolean.TRUE.equals(hasToZip)) {
                     Map<String, ByteArrayOutputStream> mapToZip = new HashMap<>();
-                    processExportExerciseList(exercises, null, template, inputStream, mapToZip);
+                    processExportExerciseList(exercises, outputStream, template, inputStream, mapToZip);
+
                 } else {
                     processExportExerciseList(exercises, outputStream, template, inputStream, null);
                 }
@@ -150,13 +153,16 @@ public class ExportServiceImpl implements ExportService {
         // Заменяем все паттерны в оставшемся документе (помимо уже обработанной таблицы)
         replaceAllPatternsInCellExerciseListDoc(doc, template.getName());
 
-        if (CollectionUtils.isEmpty(mapToZip)) {
+        if (isNull(mapToZip)) {
             doc.save(outputStream);
         } else {
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 doc.save(baos);
                 mapToZip.put(template.getName() + LocalDate.now().format(DateTimeFormatter.ISO_DATE)
                         + "." + template.getMimeType().name().toLowerCase(), baos);
+            }
+            if (!CollectionUtils.isEmpty(mapToZip)) {
+                writeZipArchive(mapToZip, outputStream);
             }
         }
     }
@@ -214,6 +220,9 @@ public class ExportServiceImpl implements ExportService {
     }
 
     private void replaceTextNavigation(String newText, TextNavigation search) throws InvalidNavigationException {
+        if (!StringUtils.hasText(newText)) {
+            newText = "";
+        }
         while (search.hasNext()) {
             TextSelection item = (TextSelection) search.nextSelection();
             item.replaceWith(newText);

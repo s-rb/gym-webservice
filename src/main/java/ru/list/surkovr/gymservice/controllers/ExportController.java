@@ -47,7 +47,7 @@ public class ExportController {
 
         if (Boolean.TRUE.equals(isOdtFormat)) {
             response.setContentType("application/octet-stream");
-            fileName = format("request_clarifications_%s.zip", dateTime);
+            fileName = format("exercises_export_%s.zip", dateTime);
             exportService.writeExercisesToOutputStream(exercises, outputStream, true, hasToZip);
         } else {
             response.setContentType("text/csv");

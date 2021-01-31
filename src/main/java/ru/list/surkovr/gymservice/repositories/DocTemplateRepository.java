@@ -10,5 +10,5 @@ import ru.list.surkovr.gymservice.domain.DocTemplateCodeEnum;
  */
 public interface DocTemplateRepository extends JpaRepository<DocTemplate, Long> {
 
-    DocTemplate findByCode(DocTemplateCodeEnum code);
+    DocTemplate findFirstByCode(DocTemplateCodeEnum code);
 }
