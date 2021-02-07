@@ -4,19 +4,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 /**
  * @author Roman Surkov
- * @created on 17.01.2021
+ * @created on 07.02.2021
  */
 @Data
 @NoArgsConstructor
 @Builder
-public class ExerciseDto {
+public class TagDto {
 
     private Long id;
     private String name;
-    private String description;
-    private Set<String> tags;
 }

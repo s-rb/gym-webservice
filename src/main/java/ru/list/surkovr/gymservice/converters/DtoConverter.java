@@ -6,12 +6,15 @@ import ru.list.surkovr.gymservice.domain.DocTemplate;
 import ru.list.surkovr.gymservice.domain.Exercise;
 import ru.list.surkovr.gymservice.domain.Tag;
 import ru.list.surkovr.gymservice.dto.ExerciseDto;
-import ru.list.surkovr.gymservice.dtos.UploadFileDto;
+import ru.list.surkovr.gymservice.dto.TagDto;
+import ru.list.surkovr.gymservice.dto.UploadFileDto;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
@@ -51,5 +54,21 @@ public class DtoConverter {
             dto.setUpdated(template.getUpdated());
         }
         return dto;
+    }
+
+    public List<TagDto> convertTags(List<Tag> tags) {
+        if (CollectionUtils.isEmpty(tags)) {
+            return Collections.emptyList();
+        }
+        return tags.stream().map(this::convert).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public TagDto convert(Tag tag) {
+        if (isNull(tag)) {
+            return null;
+        }
+        return TagDto.builder()
+                .id(tag.getId()).name(tag.getName())
+                .build();
     }
 }

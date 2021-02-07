@@ -1,6 +1,7 @@
 package ru.list.surkovr.gymservice.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,9 +13,9 @@ import javax.persistence.*;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "tags")
+@Builder
 public class Tag {
 
     @Id
@@ -22,6 +23,6 @@ public class Tag {
     @Column(name = "tag_id")
     private Long id;
 
-    @Column(name = "tag_name")
+    @Column(name = "tag_name", unique = true)
     private String name;
 }

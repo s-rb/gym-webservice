@@ -15,7 +15,7 @@ import ru.list.surkovr.gymservice.converters.DtoConverter;
 import ru.list.surkovr.gymservice.domain.DocTemplate;
 import ru.list.surkovr.gymservice.domain.DocTemplateCodeEnum;
 import ru.list.surkovr.gymservice.domain.DocTemplateMimeType;
-import ru.list.surkovr.gymservice.dtos.UploadFileDto;
+import ru.list.surkovr.gymservice.dto.UploadFileDto;
 import ru.list.surkovr.gymservice.services.interfaces.FileStorageService;
 import ru.list.surkovr.gymservice.utils.Validator;
 
@@ -43,7 +43,6 @@ public class TemplateController {
         this.dtoConverter = dtoConverter;
     }
 
-    // TODO сделать проверку на тип файлов (расширение)
     @PostMapping
     @ResponseBody
     public ResponseEntity<UploadFileDto> uploadFile(@RequestParam("file") MultipartFile file,
@@ -56,7 +55,8 @@ public class TemplateController {
             boolean isFileExtensionValid = Validator.isFileExtensionValid(originalFilename,
                     allowedExtensions);
             if (!isFileExtensionValid) {
-                String msg = "File extension is not valid. Supported extensions: " + String.join(", ", allowedExtensions);
+                String msg = "File extension is not valid. Supported extensions: "
+                        + String.join(", ", allowedExtensions);
                 log.error("### In uploadFile caught exception. " + msg);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.WARNING, msg).build();
             }
