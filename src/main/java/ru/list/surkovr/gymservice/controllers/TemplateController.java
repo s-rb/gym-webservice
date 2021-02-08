@@ -6,16 +6,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.list.surkovr.gymservice.converters.DtoConverter;
 import ru.list.surkovr.gymservice.domain.DocTemplate;
 import ru.list.surkovr.gymservice.domain.DocTemplateCodeEnum;
 import ru.list.surkovr.gymservice.domain.DocTemplateMimeType;
 import ru.list.surkovr.gymservice.dto.UploadFileDto;
+import ru.list.surkovr.gymservice.services.interfaces.DocTemplateService;
 import ru.list.surkovr.gymservice.services.interfaces.FileStorageService;
 import ru.list.surkovr.gymservice.utils.Validator;
 
@@ -37,10 +35,14 @@ public class TemplateController {
     private final FileStorageService fileStorageService;
     @Autowired
     private final DtoConverter dtoConverter;
+    @Autowired
+    private final DocTemplateService docTemplateService;
 
-    public TemplateController(FileStorageService fileStorageService, DtoConverter dtoConverter) {
+    public TemplateController(FileStorageService fileStorageService, DtoConverter dtoConverter,
+                              DocTemplateService docTemplateService) {
         this.fileStorageService = fileStorageService;
         this.dtoConverter = dtoConverter;
+        this.docTemplateService = docTemplateService;
     }
 
     @PostMapping
@@ -69,5 +71,12 @@ public class TemplateController {
             log.error(msg);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.WARNING, "msg").build();
         }
+    }
+
+    @GetMapping
+    @ResponseBody
+    public ResponseEntity<List<UploadFileDto>> getAllUploadedFilesData() {
+        List<DocTemplate> templates = docTemplateService.findAll();
+        return ResponseEntity.ok().body(dtoConverter.convertTemplates(templates));
     }
 }

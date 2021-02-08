@@ -1,5 +1,6 @@
 package ru.list.surkovr.gymservice.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @NoArgsConstructor
+@Builder
 public class UploadFileDto {
 
     private Long id;

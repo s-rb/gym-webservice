@@ -46,14 +46,10 @@ public class DtoConverter {
     }
 
     public UploadFileDto convert(DocTemplate template) {
-        UploadFileDto dto = new UploadFileDto();
-        if (nonNull(template)) {
-            dto.setId(template.getId());
-            dto.setName(template.getName());
-            dto.setCreated(template.getCreated());
-            dto.setUpdated(template.getUpdated());
-        }
-        return dto;
+        if (isNull(template)) return null;
+        return UploadFileDto.builder()
+                .id(template.getId()).name(template.getName())
+                .created(template.getCreated()).updated(template.getUpdated()).build();
     }
 
     public List<TagDto> convertTags(List<Tag> tags) {
@@ -70,5 +66,10 @@ public class DtoConverter {
         return TagDto.builder()
                 .id(tag.getId()).name(tag.getName())
                 .build();
+    }
+
+    public List<UploadFileDto> convertTemplates(List<DocTemplate> templates) {
+        if (CollectionUtils.isEmpty(templates)) return Collections.emptyList();
+        return templates.stream().map(this::convert).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }
