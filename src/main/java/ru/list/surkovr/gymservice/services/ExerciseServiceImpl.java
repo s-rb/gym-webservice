@@ -86,7 +86,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Exercise edit(Long exerciseId, String name, String description, Set<String> tags) {
-        Exercise exercise = exerciseRepository.getOne(exerciseId);
+        Exercise exercise = exerciseRepository.findById(exerciseId).orElse(null);
         if (isNull(exercise)) return null;
         exercise.setName(name);
         exercise.setDescription(description);

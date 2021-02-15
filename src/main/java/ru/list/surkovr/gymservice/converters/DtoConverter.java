@@ -5,9 +5,11 @@ import org.springframework.util.CollectionUtils;
 import ru.list.surkovr.gymservice.domain.DocTemplate;
 import ru.list.surkovr.gymservice.domain.Exercise;
 import ru.list.surkovr.gymservice.domain.Tag;
+import ru.list.surkovr.gymservice.domain.User;
 import ru.list.surkovr.gymservice.dto.ExerciseDto;
 import ru.list.surkovr.gymservice.dto.TagDto;
 import ru.list.surkovr.gymservice.dto.UploadFileDto;
+import ru.list.surkovr.gymservice.dto.UserDto;
 
 import java.util.Collections;
 import java.util.List;
@@ -71,5 +73,16 @@ public class DtoConverter {
     public List<UploadFileDto> convertTemplates(List<DocTemplate> templates) {
         if (CollectionUtils.isEmpty(templates)) return Collections.emptyList();
         return templates.stream().map(this::convert).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public List<UserDto> convertUsers(List<User> users) {
+        return users.stream().map(this::convert).collect(Collectors.toList());
+    }
+
+    public UserDto convert(User user) {
+        return UserDto.builder()
+                .id(user.getId()).username(user.getUsername())
+                .lastName(user.getLastName()).firstName(user.getFirstName()).middleName(user.getMiddleName())
+                .build();
     }
 }
