@@ -23,15 +23,13 @@ import javax.servlet.ServletOutputStream;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.util.Objects.isNull;
+import static ru.list.surkovr.gymservice.controllers.ExportController.EXERCISES_EXPORT_CSV_FILE_NAME_FORMAT_STRING;
 
 @Slf4j
 @Service
@@ -47,22 +45,44 @@ public class ExportServiceImpl implements ExportService {
         this.docTemplateRepository = docTemplateRepository;
     }
 
-    // TODO - Zip this by hasToZip
     @Override
     public void writeExercisesToOutputStream(List<Exercise> exercises, OutputStream outputStream, boolean hasToZip) {
-        try (BufferedOutputStream bos = new BufferedOutputStream(outputStream)) {
-            writeHeader(bos, Exercise.class);
-            for (Exercise exercise : exercises) {
-                try {
-                    String exerciseExportString = exercise.getExportString(EXPORT_CSV_DELIMITER);
-                    String exercisesNewString = exerciseExportString + "\n";
-                    outputStream.write(exercisesNewString.getBytes(EXPORT_CSV_CHARSET));
-                } catch (IOException e) {
-                    log.error("### In writeExercisesToOutputStream get exception while writing exercise: {}", exercise);
-                }
+        String headerLineStr = getHeaderLineStr(Exercise.class);
+        List<String> exercisesStrings = new LinkedList<>();
+        for (Exercise exercise : exercises) {
+            String exerciseExportString = exercise.getExportString(EXPORT_CSV_DELIMITER);
+            String exercisesNewString = exerciseExportString + "\n";
+            exercisesStrings.add(exercisesNewString);
+        }
+
+        if (!hasToZip) {
+            try (BufferedOutputStream bos = new BufferedOutputStream(outputStream)) {
+                writeLinesToOutputStream(headerLineStr, exercisesStrings, bos);
+            } catch (IOException e) {
+                log.error("### In writeExercisesToOutputStream get exception", e);
             }
-        } catch (IOException e) {
-            log.error("### In writeExercisesToOutputStream get exception", e);
+        } else {
+            try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outputStream))) {
+                String fileName = String.format(EXERCISES_EXPORT_CSV_FILE_NAME_FORMAT_STRING, LocalDate.now());
+                ZipEntry zipEntry = new ZipEntry(fileName);
+                zos.putNextEntry(zipEntry);
+                writeLinesToOutputStream(headerLineStr, exercisesStrings, zos);
+                zos.closeEntry();
+            } catch (IOException e) {
+                log.error("### In writeExercisesToOutputStream get exception", e);
+            }
+        }
+    }
+
+    private void writeLinesToOutputStream(String headerLineStr, List<String> exercisesStrings,
+                                          OutputStream outputStream) throws IOException {
+        writeString(outputStream, headerLineStr);
+        for (String exerciseStr : exercisesStrings) {
+            try {
+                writeString(outputStream, exerciseStr);
+            } catch (IOException e) {
+                log.error("### In writeLinesToOutputStream get exception while writing exercise: {}", exerciseStr);
+            }
         }
     }
 
@@ -83,7 +103,6 @@ public class ExportServiceImpl implements ExportService {
                 if (Boolean.TRUE.equals(hasToZip)) {
                     Map<String, ByteArrayOutputStream> mapToZip = new HashMap<>();
                     processExportExerciseList(exercises, outputStream, template, inputStream, mapToZip);
-
                 } else {
                     processExportExerciseList(exercises, outputStream, template, inputStream, null);
                 }
@@ -237,12 +256,15 @@ private void writeData(OutputStream outputStream, Object exercise, Class<?> claz
                 .collect(Collectors.joining(EXPORT_CSV_DELIMITER));
     }*/
 
-    private void writeHeader(OutputStream outputStream, Class<?> clazz) throws IOException {
-        String headerLine = Arrays.stream(clazz.getDeclaredFields())
+    private void writeString(OutputStream outputStream, String header) throws IOException {
+        String headerLineNextStr = header + "\n";
+        outputStream.write(headerLineNextStr.getBytes(EXPORT_CSV_CHARSET));
+    }
+
+    private String getHeaderLineStr(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(DescriptionAnnotation.class))
                 .map(field -> field.getAnnotation(DescriptionAnnotation.class).value())
                 .collect(Collectors.joining(EXPORT_CSV_DELIMITER));
-        String headerLineNextStr = headerLine + "\n";
-        outputStream.write(headerLineNextStr.getBytes(EXPORT_CSV_CHARSET));
     }
 }

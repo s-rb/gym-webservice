@@ -22,6 +22,8 @@ import static java.lang.String.format;
 @RequestMapping("api/v1/export")
 public class ExportController {
 
+    public static final String EXERCISES_EXPORT_CSV_FILE_NAME_FORMAT_STRING = "exercises_export_%s.csv";
+    public static final String EXERCISES_EXPORT_ZIP_FILE_NAME_FORMAT_STRING = "exercises_export_%s.zip";
     @Autowired
     private final ExerciseService exerciseService;
     @Autowired
@@ -47,11 +49,11 @@ public class ExportController {
 
         if (Boolean.TRUE.equals(isOdtFormat)) {
             response.setContentType("application/octet-stream");
-            fileName = format("exercises_export_%s.zip", dateTime);
+            fileName = format(EXERCISES_EXPORT_ZIP_FILE_NAME_FORMAT_STRING, dateTime);
             exportService.writeExercisesToOutputStream(exercises, outputStream, true, hasToZip);
         } else {
             response.setContentType("text/csv");
-            fileName = format("exercises_export_%s.csv", dateTime);
+            fileName = format(EXERCISES_EXPORT_CSV_FILE_NAME_FORMAT_STRING, dateTime);
             exportService.writeExercisesToOutputStream(exercises, outputStream, hasToZip);
         }
 
