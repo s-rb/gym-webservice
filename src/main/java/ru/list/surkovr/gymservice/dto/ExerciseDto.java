@@ -12,11 +12,18 @@ import java.util.Set;
  */
 @Data
 @NoArgsConstructor
-@Builder
 public class ExerciseDto {
 
     private Long id;
     private String name;
     private String description;
     private Set<String> tags;
+
+    @Builder
+    public ExerciseDto(Long id, String name, String description, Set<String> tags) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.tags = tags;
+    }
 }

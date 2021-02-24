@@ -12,11 +12,18 @@ import java.time.LocalDateTime;
  */
 @Data
 @NoArgsConstructor
-@Builder
 public class UploadFileDto {
 
     private Long id;
     private String name;
     private LocalDateTime created;
     private LocalDateTime updated;
+
+    @Builder
+    public UploadFileDto(Long id, String name, LocalDateTime created, LocalDateTime updated) {
+        this.id = id;
+        this.name = name;
+        this.created = created;
+        this.updated = updated;
+    }
 }

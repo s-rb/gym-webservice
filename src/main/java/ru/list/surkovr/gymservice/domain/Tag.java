@@ -15,7 +15,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "tags")
-@Builder
 public class Tag {
 
     @Id
@@ -25,4 +24,10 @@ public class Tag {
 
     @Column(name = "tag_name", unique = true)
     private String name;
+
+    @Builder
+    public Tag(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

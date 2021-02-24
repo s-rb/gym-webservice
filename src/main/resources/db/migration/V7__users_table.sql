@@ -5,7 +5,7 @@ CREATE TABLE if not exists users
     password    varchar(250)        not null,
     last_name   varchar(250)        not null,
     first_name  varchar(250)        not null,
-    middle_name varchar(250)        not null
+    middle_name varchar(250)
 );
 
 INSERT INTO users(username, password, last_name, first_name)
