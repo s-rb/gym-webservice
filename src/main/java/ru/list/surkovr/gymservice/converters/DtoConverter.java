@@ -2,14 +2,8 @@ package ru.list.surkovr.gymservice.converters;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import ru.list.surkovr.gymservice.domain.DocTemplate;
-import ru.list.surkovr.gymservice.domain.Exercise;
-import ru.list.surkovr.gymservice.domain.Tag;
-import ru.list.surkovr.gymservice.domain.User;
-import ru.list.surkovr.gymservice.dto.ExerciseDto;
-import ru.list.surkovr.gymservice.dto.TagDto;
-import ru.list.surkovr.gymservice.dto.UploadFileDto;
-import ru.list.surkovr.gymservice.dto.UserDto;
+import ru.list.surkovr.gymservice.domain.*;
+import ru.list.surkovr.gymservice.dto.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -84,5 +78,27 @@ public class DtoConverter {
                 .id(user.getId()).username(user.getUsername())
                 .lastName(user.getLastName()).firstName(user.getFirstName()).middleName(user.getMiddleName())
                 .build();
+    }
+
+    public List<WorkoutDto> convertWorkOuts(List<Workout> workouts) {
+        return workouts.stream().map(this::convert).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public WorkoutDto convert(Workout workout) {
+        return WorkoutDto.builder()
+                .id(workout.getId())
+                .date(workout.getDate())
+                .userId(workout.getUser().getId())
+                .sets(workout.getSets().stream().map(this::convert).collect(Collectors.toList())).build();
+    }
+
+    public WorkoutSetDto convert(WorkoutSet set) {
+        return WorkoutSetDto.builder()
+                .id(set.getId())
+                .reps(set.getReps())
+                .value(set.getValue())
+                .measureUnit(set.getMeasureUnit().name())
+                .exerciseId(set.getExercise().getId())
+                .exerciseName(set.getExercise().getName()).build();
     }
 }
