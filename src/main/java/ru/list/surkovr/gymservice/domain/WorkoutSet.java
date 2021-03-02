@@ -1,5 +1,6 @@
 package ru.list.surkovr.gymservice.domain;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -33,4 +34,15 @@ public class WorkoutSet {
     @ManyToOne
     @JoinColumn(name = "workout_id")
     private Workout workout;
+
+    @Builder
+    public WorkoutSet(Long id, Exercise exercise, MeasureUnitEnum measureUnit, Integer value, Integer reps,
+                      Workout workout) {
+        this.id = id;
+        this.exercise = exercise;
+        this.measureUnit = measureUnit;
+        this.value = value;
+        this.reps = reps;
+        this.workout = workout;
+    }
 }

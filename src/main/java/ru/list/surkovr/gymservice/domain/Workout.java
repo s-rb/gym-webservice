@@ -1,5 +1,6 @@
 package ru.list.surkovr.gymservice.domain;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,7 +28,16 @@ public class Workout {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // TODO Fix it
     @OneToMany
     @JoinColumn(name = "workout_set")
     private List<WorkoutSet> sets;
+
+    @Builder
+    public Workout(Long id, LocalDate date, User user, List<WorkoutSet> sets) {
+        this.id = id;
+        this.date = date;
+        this.user = user;
+        this.sets = sets;
+    }
 }

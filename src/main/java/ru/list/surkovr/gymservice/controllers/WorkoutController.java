@@ -3,10 +3,7 @@ package ru.list.surkovr.gymservice.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.list.surkovr.gymservice.converters.DtoConverter;
 import ru.list.surkovr.gymservice.domain.Workout;
 import ru.list.surkovr.gymservice.dto.WorkoutDto;
@@ -14,6 +11,8 @@ import ru.list.surkovr.gymservice.services.interfaces.WorkoutService;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 /**
  * @author Roman Surkov
@@ -42,32 +41,19 @@ public class WorkoutController {
         return ResponseEntity.ok(dtoConverter.convertWorkOuts(workouts));
     }
 
-//
-//
-//    @GetMapping("{id}")
-//    public ResponseEntity<ExerciseDto> getById(@PathVariable("id") Exercise exerciseById) {
-//        return ResponseEntity.ok(dtoConverter.convert(exerciseById));
-//    }
-//
-//    @GetMapping("search")
-//    public ResponseEntity<List<ExerciseDto>> searchByTag(@RequestParam String tag,
-//                                                         @RequestParam(required = false) Boolean isNotAccurateSearch,
-//                                                         @RequestParam(required = false, defaultValue = "30") Integer accuracy) {
-//        List<Exercise> exercises;
-//        if (isNull(isNotAccurateSearch) || !isNotAccurateSearch) {
-//            exercises = exerciseService.findAllByTag(tag);
-//        } else {
-//            exercises = exerciseService.findAllByTagNotAccurate(tag, accuracy);
-//        }
-//        return ResponseEntity.ok(dtoConverter.convert(exercises));
-//    }
-//
-//    @PostMapping
-//    public ResponseEntity<ExerciseDto> save(@RequestBody ExerciseDto exercise) {
-//        Exercise saved = exerciseService.save(exercise.getName(), exercise.getDescription(), exercise.getTags());
-//        return ResponseEntity.ok(dtoConverter.convert(saved));
-//    }
-//
+    // Spring сам понимает, что нужно получить из БД объект с переданным в параметрах ИД нужного типа
+    @GetMapping("{id}")
+    public ResponseEntity<WorkoutDto> getById(@PathVariable("id") Workout workout) {
+        return ResponseEntity.ok(dtoConverter.convert(workout));
+    }
+
+    @PostMapping
+    public ResponseEntity<WorkoutDto> save(@RequestBody WorkoutDto workout) {
+        Workout saved = workoutService.save(workout.getDate(), workout.getUserId(), workout.getSets());
+        return ResponseEntity.ok(dtoConverter.convert(saved));
+    }
+
+    // TODO
 //    @PutMapping
 //    public ResponseEntity<ExerciseDto> edit(@RequestBody ExerciseDto exerciseDto) {
 //        Long id = exerciseDto.getId();
@@ -84,11 +70,11 @@ public class WorkoutController {
 //        }
 //    }
 //
-//    @DeleteMapping("{id}")
-//    public ResponseEntity<Void> delete(@PathVariable Long id) {
-//        Exercise exercise = exerciseService.findOne(id);
-//        if (isNull(exercise)) return ResponseEntity.notFound().build();
-//        exerciseService.deleteById(id);
-//        return ResponseEntity.ok().build();
-//    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        Workout workout = workoutService.findOne(id);
+        if (isNull(workout)) return ResponseEntity.notFound().build();
+        workoutService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -24,7 +24,7 @@ public class GymServiceApplication {
         SpringApplication.run(GymServiceApplication.class, args);
     }
 
-    @Bean(name = "dataSource")
+    /*@Bean(name = "dataSource")
     public UserCredentialsDataSourceAdapter dataSource(
             @Value("${spring.datasource.url}") String url
     ) {
@@ -60,5 +60,5 @@ public class GymServiceApplication {
         em.setJpaVendorAdapter(vendorAdapter);
 
         return em;
-    }
+    }*/
 }
