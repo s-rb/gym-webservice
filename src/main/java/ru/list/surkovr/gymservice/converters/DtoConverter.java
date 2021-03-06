@@ -28,8 +28,8 @@ public class DtoConverter {
             dto.setDescription(exercise.getDescription());
             dto.setTags(
                     nonNull(exercise.getTags())
-                            ? exercise.getTags().stream().map(Tag::getName).collect(Collectors.toSet())
-                            : Collections.emptySet());
+                            ? exercise.getTags().stream().map(Tag::getName).collect(Collectors.toList())
+                            : Collections.emptyList());
         }
         return dto;
     }

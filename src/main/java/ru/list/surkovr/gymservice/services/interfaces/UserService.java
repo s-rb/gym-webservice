@@ -11,5 +11,7 @@ public interface UserService {
 
     User edit(Long id, String lastName, String firstName, String middleName, String username);
 
-    User add(String lastName, String firstName, String middleName, String username);
+    User add(String lastName, String firstName, String middleName, String username, String password);
+
+    void deleteById(Long id);
 }

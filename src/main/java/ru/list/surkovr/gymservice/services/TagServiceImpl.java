@@ -27,12 +27,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Set<Tag> findAllBy(Set<String> tagNames) {
+    public Set<Tag> findAllBy(List<String> tagNames) {
         return tagRepository.findAllTagsByNameIsIn(tagNames);
     }
 
     @Override
-    public Set<Tag> createTags(Set<String> tagsToCreate) {
+    public Set<Tag> createTags(List<String> tagsToCreate) {
         Set<Tag> foundTags = findAllBy(tagsToCreate);
         if (!CollectionUtils.isEmpty(foundTags)) {
             tagsToCreate.removeIf(t -> foundTags.stream().map(Tag::getName)
@@ -75,6 +75,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void deleteById(Long id) {
+        tagRepository.deleteExerciseTagsByTagId(id);
         tagRepository.deleteById(id);
     }
 

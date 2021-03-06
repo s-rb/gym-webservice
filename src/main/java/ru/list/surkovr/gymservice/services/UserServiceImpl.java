@@ -43,15 +43,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User add(String lastName, String firstName, String middleName, String username) {
+    public User add(String lastName, String firstName, String middleName, String username, String password) {
         User user;
         if (StringUtils.hasText(lastName) && StringUtils.hasText(firstName)) {
             User newUser = User.builder().lastName(lastName).firstName(firstName)
-                    .middleName(middleName).username(username).build();
+                    .middleName(middleName).username(username).password(password).build();
             user = userRepository.save(newUser);
         } else {
             user = null;
         }
         return user;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
     }
 }

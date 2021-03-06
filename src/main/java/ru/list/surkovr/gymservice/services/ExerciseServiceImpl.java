@@ -11,10 +11,11 @@ import ru.list.surkovr.gymservice.repositories.ExerciseRepository;
 import ru.list.surkovr.gymservice.services.interfaces.ExerciseService;
 import ru.list.surkovr.gymservice.services.interfaces.TagService;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -61,7 +62,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public Exercise save(String name, String description, Set<String> tags) {
+    public Exercise save(String name, String description, List<String> tags) {
         Exercise exercise = new Exercise();
         exercise.setName(name);
         exercise.setDescription(description);
@@ -69,23 +70,23 @@ public class ExerciseServiceImpl implements ExerciseService {
         return exerciseRepository.save(exercise);
     }
 
-    private void setTags(Set<String> tags, Exercise exercise) {
+    private void setTags(List<String> tags, Exercise exercise) {
         if (!CollectionUtils.isEmpty(tags)) {
             Set<Tag> foundTags = tagService.findAllBy(tags);
-            Set<String> tagsToCreate = new HashSet<>();
+            List<String> tagsToCreate = new ArrayList<>();
             tags.forEach(tagName -> {
                 if (foundTags.stream().map(Tag::getName).noneMatch(t -> t.equalsIgnoreCase(tagName))) {
                     tagsToCreate.add(tagName);
                 }
             });
-            Set<Tag> createdTags = tagService.createTags(tagsToCreate);
+            Set<Tag> createdTags = tagService.createTags(tagsToCreate.stream().distinct().collect(Collectors.toList()));
             foundTags.addAll(createdTags);
             exercise.setTags(foundTags);
         }
     }
 
     @Override
-    public Exercise edit(Long exerciseId, String name, String description, Set<String> tags) {
+    public Exercise edit(Long exerciseId, String name, String description, List<String> tags) {
         Exercise exercise = exerciseRepository.findById(exerciseId).orElse(null);
         if (isNull(exercise)) return null;
         exercise.setName(name);

@@ -7,9 +7,9 @@ import java.util.Set;
 
 public interface TagService {
 
-    Set<Tag> findAllBy(Set<String> tagNames);
+    Set<Tag> findAllBy(List<String> tagNames);
 
-    Set<Tag> createTags(Set<String> tagsToCreate);
+    Set<Tag> createTags(List<String> tagsToCreate);
 
     List<Tag> findAll();
 

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author Roman Surkov
@@ -17,10 +17,10 @@ public class ExerciseDto {
     private Long id;
     private String name;
     private String description;
-    private Set<String> tags;
+    private List<String> tags;
 
     @Builder
-    public ExerciseDto(Long id, String name, String description, Set<String> tags) {
+    public ExerciseDto(Long id, String name, String description, List<String> tags) {
         this.id = id;
         this.name = name;
         this.description = description;

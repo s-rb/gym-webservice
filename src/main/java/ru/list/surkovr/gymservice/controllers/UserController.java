@@ -9,7 +9,10 @@ import ru.list.surkovr.gymservice.domain.User;
 import ru.list.surkovr.gymservice.dto.UserDto;
 import ru.list.surkovr.gymservice.services.interfaces.UserService;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @Slf4j
 @RestController
@@ -27,28 +30,35 @@ public class UserController {
     }
 
     @GetMapping
-    private ResponseEntity<List<UserDto>> getAll() {
+    public ResponseEntity<List<UserDto>> getAll() {
         List<User> users = userService.findAll();
         return ResponseEntity.ok(dtoConverter.convertUsers(users));
     }
 
     @GetMapping("{id}")
-    private ResponseEntity<UserDto> getOne(@PathVariable Long id) {
+    public ResponseEntity<UserDto> getOne(@PathVariable Long id) {
         User user = userService.findById(id);
         return ResponseEntity.ok(dtoConverter.convert(user));
     }
 
     @PutMapping("{id}")
-    private ResponseEntity<UserDto> edit(@RequestBody UserDto userDto, @PathVariable Long id) {
+    public ResponseEntity<UserDto> edit(@RequestBody UserDto userDto, @PathVariable Long id) {
         User user = userService.edit(id, userDto.getLastName(), userDto.getFirstName(), userDto.getMiddleName(),
                 userDto.getUsername());
         return ResponseEntity.ok(dtoConverter.convert(user));
     }
 
     @PostMapping
-    private ResponseEntity<UserDto> add(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> add(@RequestBody UserDto userDto) {
         User user = userService.add(userDto.getLastName(), userDto.getFirstName(), userDto.getMiddleName(),
-                userDto.getUsername());
+                userDto.getUsername(), userDto.getPassword());
         return ResponseEntity.ok(dtoConverter.convert(user));
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteById(@PathVariable("id") Long id) {
+        User user = userService.findById(id);
+        if (isNull(user)) throw new EntityNotFoundException("Не найден пользователь с идентификатором: " + id);
+        userService.deleteById(id);
     }
 }
