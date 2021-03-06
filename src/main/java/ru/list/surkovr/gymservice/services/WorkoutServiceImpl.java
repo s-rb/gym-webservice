@@ -12,9 +12,12 @@ import ru.list.surkovr.gymservice.services.interfaces.ExerciseService;
 import ru.list.surkovr.gymservice.services.interfaces.UserService;
 import ru.list.surkovr.gymservice.services.interfaces.WorkoutService;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+
+import static java.util.Objects.isNull;
 
 @Slf4j
 @Service
@@ -47,6 +50,11 @@ public class WorkoutServiceImpl implements WorkoutService {
                 .user(userService.findById(userId)).build();
         Workout savedWorkout = workoutRepository.save(workout);
 
+        createSets(sets, savedWorkout);
+        return savedWorkout;
+    }
+
+    private void createSets(List<WorkoutSetDto> sets, Workout savedWorkout) {
         sets.forEach(set -> {
             WorkoutSet workoutSet = WorkoutSet.builder()
                     .workout(savedWorkout)
@@ -58,7 +66,6 @@ public class WorkoutServiceImpl implements WorkoutService {
             WorkoutSet savedSet = workoutRepository.save(workoutSet);
             savedWorkout.getSets().add(savedSet);
         });
-        return savedWorkout;
     }
 
     @Override
@@ -68,6 +75,18 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public void deleteById(Long id) {
+        workoutRepository.deleteSetsByWorkoutId(id);
         workoutRepository.deleteById(id);
+    }
+
+    @Override
+    public Workout edit(Long id, LocalDate date, List<WorkoutSetDto> sets) {
+        Workout workout = workoutRepository.findOne(id);
+        if (isNull(workout)) {
+            throw new EntityNotFoundException("Workout by id: '" + id + "' not found");
+        }
+        workoutRepository.deleteSetsByWorkoutId(workout.getId());
+        createSets(sets, workout);
+        return workout;
     }
 }

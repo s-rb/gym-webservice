@@ -3,10 +3,12 @@ package ru.list.surkovr.gymservice.repositories;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.list.surkovr.gymservice.domain.QWorkout;
+import ru.list.surkovr.gymservice.domain.QWorkoutSet;
 import ru.list.surkovr.gymservice.domain.Workout;
 import ru.list.surkovr.gymservice.domain.WorkoutSet;
 
@@ -80,5 +82,11 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
     public void deleteById(Long id) {
         QWorkout qWorkout = QWorkout.workout;
         queryFactory.delete(qWorkout).where(qWorkout.id.eq(id)).execute();
+    }
+
+    @Override
+    public void deleteSetsByWorkoutId(@NonNull Long workoutId) {
+        QWorkoutSet qWorkoutSet = QWorkoutSet.workoutSet;
+        queryFactory.delete(qWorkoutSet).where(qWorkoutSet.workout.id.eq(workoutId)).execute();
     }
 }

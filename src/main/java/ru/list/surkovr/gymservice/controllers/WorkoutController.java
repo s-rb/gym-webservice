@@ -2,6 +2,7 @@ package ru.list.surkovr.gymservice.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.list.surkovr.gymservice.converters.DtoConverter;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 /**
  * @author Roman Surkov
@@ -53,23 +55,22 @@ public class WorkoutController {
         return ResponseEntity.ok(dtoConverter.convert(saved));
     }
 
-    // TODO
-//    @PutMapping
-//    public ResponseEntity<ExerciseDto> edit(@RequestBody ExerciseDto exerciseDto) {
-//        Long id = exerciseDto.getId();
-//        if (isNull(id)) {
-//            return ResponseEntity.badRequest().header(HttpHeaders.WARNING, "Отсутствует идентификатор").build();
-//        }
-//        Exercise updated = exerciseService
-//                .edit(id, exerciseDto.getName(), exerciseDto.getDescription(), exerciseDto.getTags());
-//        if (nonNull(updated)) {
-//            return ResponseEntity.ok(dtoConverter.convert(updated));
-//        } else {
-//            return ResponseEntity.badRequest()
-//                    .header(HttpHeaders.WARNING, "Не найдено упражнение с переданным ID").build();
-//        }
-//    }
-//
+    @PutMapping
+    public ResponseEntity<WorkoutDto> edit(@RequestBody WorkoutDto workoutDto) {
+        Long id = workoutDto.getId();
+        if (isNull(id)) {
+            return ResponseEntity.badRequest().header(HttpHeaders.WARNING,
+                    "Отсутствует идентификатор").build();
+        }
+        Workout updated = workoutService.edit(id, workoutDto.getDate(), workoutDto.getSets());
+        if (nonNull(updated)) {
+            return ResponseEntity.ok(dtoConverter.convert(updated));
+        } else {
+            return ResponseEntity.badRequest()
+                    .header(HttpHeaders.WARNING, "Не найдена тренировка с переданным ID").build();
+        }
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         Workout workout = workoutService.findOne(id);

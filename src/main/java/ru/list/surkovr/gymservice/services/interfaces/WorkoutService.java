@@ -14,4 +14,6 @@ public interface WorkoutService {
     Workout findOne(Long id);
 
     void deleteById(Long id);
+
+    Workout edit(Long id, LocalDate date, List<WorkoutSetDto> sets);
 }

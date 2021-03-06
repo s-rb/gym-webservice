@@ -16,4 +16,6 @@ public interface WorkoutRepository {
     Workout findOne(Long id);
 
     void deleteById(Long id);
+
+    void deleteSetsByWorkoutId(Long id);
 }
