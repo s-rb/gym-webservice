@@ -72,7 +72,6 @@ public class TemplateController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.WARNING, "msg").build();
         }
     }
-    // TODO при экспорте и отсутствии шаблона - выдавать соответствующее сообщение, что нужен шаблон
 
     @GetMapping
     @ResponseBody

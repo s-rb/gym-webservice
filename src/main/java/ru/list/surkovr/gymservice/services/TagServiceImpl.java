@@ -51,7 +51,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag save(String name) {
         if (StringUtils.hasText(name)) {
-            final Tag tag = Tag.builder().name(name).build();
+            final Tag tag = Tag.builder().name(name.toLowerCase()).build();
             return tagRepository.save(tag);
         }
         throw new IllegalArgumentException("Tag name could not be empty or blank");

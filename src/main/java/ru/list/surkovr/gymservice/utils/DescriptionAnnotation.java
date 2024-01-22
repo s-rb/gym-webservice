@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Аннотация для текстового описания полей класса
+ * Annotation for text description of class fields
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

@@ -28,7 +28,6 @@ public class Workout {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // TODO Fix it
     @OneToMany
     @JoinColumn(name = "workout_set")
     private List<WorkoutSet> sets;

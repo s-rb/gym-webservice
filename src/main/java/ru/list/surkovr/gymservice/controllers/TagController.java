@@ -34,7 +34,6 @@ public class TagController {
         this.dtoConverter = dtoConverter;
     }
 
-    // TODO добавление тегов только в нижнем регистре и соответствующая проверка (чтобы не было "Спина" и "спина")
     @GetMapping
     public ResponseEntity<List<TagDto>> getAll() {
         List<Tag> tags = tagService.findAll();

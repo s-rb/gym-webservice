@@ -248,14 +248,6 @@ public class ExportServiceImpl implements ExportService {
         }
     }
 
-/* //TODO сделать универсальный метод выгрузки для всех полей помеченных аннотацией для любого класса
-private void writeData(OutputStream outputStream, Object exercise, Class<?> clazz) {
-        String dataLine = Arrays.stream(clazz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(DescriptionAnnotation.class))
-                .map(field -> field.get(new Object()))
-                .collect(Collectors.joining(EXPORT_CSV_DELIMITER));
-    }*/
-
     private void writeString(OutputStream outputStream, String header) throws IOException {
         String headerLineNextStr = header + "\n";
         outputStream.write(headerLineNextStr.getBytes(EXPORT_CSV_CHARSET));
